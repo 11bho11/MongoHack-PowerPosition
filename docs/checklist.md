@@ -46,7 +46,7 @@
   Acceptance: All API endpoints return valid JSON. `curl http://localhost:8000/api/calendar` and `curl http://localhost:8000/api/plan` both return 200 with valid (empty) JSON.
   Verify: Start the backend. Run `curl http://localhost:8000/api/calendar`, `curl http://localhost:8000/api/plan`, `curl http://localhost:8000/api/agent-logs`, `curl http://localhost:8000/api/cycle-status` — all return 200.
 
-- [ ] **7. Telegram bot**
+- [x] **7. Telegram bot**
   Spec ref: `spec.md > Telegram Bot > Handlers`, `spec.md > Telegram Bot > Bot Runner`
   What to build: Create `backend/bot/handlers.py` with 5 handlers: start_handler (/start → task_type="session_log", seeds MongoDBStore athlete profile using onboarding prompt from prompts.py, stores initial workflow_state document for athlete_id), pregame_handler (/pregame → task_type="pre_game"), postgame_handler (/postgame → task_type="post_game"), log_handler (/log → task_type="session_log"), message_handler (any text → routes to active LangGraph thread using stored task_type for athlete_id). Each handler calls invoke_graph(task_type, athlete_id=str(chat_id), message=text). Create `backend/bot/runner.py` — ApplicationBuilder setup with all 5 handlers registered, `run_polling()` async coroutine. Bot instance must be importable from runner.py for use in telegram_send tool. Wire into main.py startup as `asyncio.create_task(run_bot())`.
   Acceptance: Sending /start to the Telegram bot receives an onboarding response. Sending /log followed by "ran 5km intervals" causes a new document to appear in the MongoDB sessions collection.
