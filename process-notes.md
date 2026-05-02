@@ -42,6 +42,21 @@
 - Deepening rounds: 1 round. Surfaced: proactive inactivity check-in (APScheduler), graph state shape clarification, rejection of restart demo beat, plan update trigger clarification
 - Active shaping: learner drove very little — deferred all technical decisions. One moment of genuine shaping: challenged the "server offline" narrative, which improved the spec. Another: proposed inactivity-based proactive check-ins unprompted.
 
+## /build
+
+- Total items completed: 11/12 (step 12 = Devpost submission, requires learner action)
+- Build mode: Autonomous — 11 subagents dispatched sequentially
+- Checklist was not revised mid-build — all items completed as specified
+- Key issues encountered and resolved:
+  - Step 1: pip deps installed globally first; learner flagged this → venv created at backend/.venv, all deps reinstalled there
+  - Step 2: `.env` had doubled `mongodb+srv://` prefix — fixed by subagent
+  - Step 3: `langchain_text_splitters` import path verified correct
+  - Step 4: `langgraph-store-mongodb` installs as `langgraph.store.mongodb` (not `langgraph_store_mongodb`) — memory.py uses lazy getters to avoid eager MongoDB connection on import
+  - Step 5: `SESSIONS_BEFORE_PLAN_UPDATE` env var was empty string, not absent — handled with `or "3"` fallback
+  - Step 6: `python-multipart` was missing from requirements.txt (needed for UploadFile) — installed and added to requirements.txt
+- All backend modules import cleanly with venv Python. All frontend TypeScript checks pass with zero errors.
+- End-to-end smoke test deferred — requires real MONGODB_URI, OPENAI_API_KEY, TELEGRAM_BOT_TOKEN in backend/.env
+
 ## /checklist
 - Session started 2026-05-02
 - Build mode: Autonomous
