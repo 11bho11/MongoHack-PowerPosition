@@ -27,16 +27,32 @@ llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv("OPENAI_API_KEY"))
 # This avoids circular import: graph.py needs tools, tools.py needs db.client
 
 def agent_node(state: PowerPositionState):
+    from langchain_core.messages import ToolMessage
+
     task_type = state.get("task_type", "session_log")
+    plan_needs_update = state.get("plan_needs_update", False)
+
+    # Check recent tool results — if session_log_write flagged a threshold breach, set the flag
+    if not plan_needs_update:
+        for msg in reversed(state["messages"]):
+            if isinstance(msg, ToolMessage) and "Plan update needed: True" in str(msg.content):
+                plan_needs_update = True
+                break
+
     system_prompt = get_system_prompt(task_type)
 
-    messages = [SystemMessage(content=system_prompt)] + state["messages"]
+    # Inject a forced instruction when the update is due
+    if plan_needs_update:
+        system_prompt += (
+            "\n\nCRITICAL INSTRUCTION: The session logging threshold has been reached. "
+            "You MUST call the plan_update tool RIGHT NOW with updated short_term, medium_term, "
+            "and long_term coaching text. Do not reply with text first — call plan_update immediately."
+        )
 
-    # Use llm_with_tools if available, else base llm
+    messages = [SystemMessage(content=system_prompt)] + state["messages"]
     model = getattr(agent_node, "_llm_with_tools", llm)
     response = model.invoke(messages)
 
-    # Track question count for post_game flow
     new_count = state.get("question_count", 0)
     if task_type == "post_game" and response.content:
         new_count += 1
@@ -44,26 +60,30 @@ def agent_node(state: PowerPositionState):
     return {
         "messages": [response],
         "question_count": new_count,
+        "plan_needs_update": plan_needs_update,
     }
 
 def should_continue(state: PowerPositionState):
+    from langchain_core.messages import ToolMessage
+
     messages = state["messages"]
     last_message = messages[-1]
     task_type = state.get("task_type", "session_log")
-    question_count = state.get("question_count", 0)
     plan_needs_update = state.get("plan_needs_update", False)
 
-    # If last message has tool calls, go to tools
+    # Route to tools if the agent just made tool calls
     if hasattr(last_message, "tool_calls") and last_message.tool_calls:
         return "tools"
 
-    # Force plan_update if post_game and question_count >= 3
-    if task_type == "post_game" and question_count >= 3:
-        return END
-
-    # Force plan_update if flag set
+    # If plan_needs_update is True but the agent hasn't called plan_update yet,
+    # loop back to agent (it will get the CRITICAL INSTRUCTION injected)
     if plan_needs_update:
-        return END
+        already_updated = any(
+            isinstance(m, ToolMessage) and "plan_update" in str(getattr(m, "name", ""))
+            for m in messages
+        )
+        if not already_updated:
+            return "agent"
 
     return END
 
@@ -80,7 +100,7 @@ def build_graph(tools: list):
     graph.add_node("tools", tools_node)
 
     graph.add_edge(START, "agent")
-    graph.add_conditional_edges("agent", should_continue, {"tools": "tools", END: END})
+    graph.add_conditional_edges("agent", should_continue, {"tools": "tools", "agent": "agent", END: END})
     graph.add_edge("tools", "agent")
 
     return graph.compile(checkpointer=get_checkpointer(), store=get_store())

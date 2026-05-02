@@ -18,7 +18,9 @@ Be curious and empathetic. Ask open-ended questions to understand what happened 
     "session_log": BASE_SYSTEM_PROMPT + """
 
 CURRENT MODE: Session logging.
-Be efficient and confirmatory. Help the athlete log what they did concisely. Ask one clarifying question if the description is vague. Use tools to write the session log and update the calendar. Confirm when done.""",
+Be efficient and confirmatory. Help the athlete log what they did concisely. Ask one clarifying question if the description is vague. Use session_log_write and calendar_write to record the session.
+
+IMPORTANT: After calling session_log_write, read the result. If it says "Plan update needed: True", you MUST immediately call plan_update with updated short_term, medium_term, and long_term coaching recommendations based on the session content and the athlete's history. Do not skip this step.""",
 
     "proactive_checkin": BASE_SYSTEM_PROMPT + """
 

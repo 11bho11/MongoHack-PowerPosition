@@ -70,3 +70,11 @@
 - Deepening rounds: 0 — learner accepted initial plan without iteration
 - Active shaping: none — learner deferred all sequencing and methodology decisions. Pattern consistent with /scope, /prd, /spec behavior.
 
+## /iterate — Iteration 1
+
+- Session started 2026-05-02
+- Prerequisites: 11/12 checklist items complete. Item 12 (Devpost submission) is a learner action item — cannot be completed by agent. Proceeding.
+- Learner communication style: speech-to-text, terse. No questions tolerated — build directly.
+- Iteration 1: Config page polish (Telegram auto-connect, training materials upload card, MCP Integrations label, Strava OAuth detail)
+- Iteration 2: Calendar overhaul — month navigation (prev/next), event type tagging per date (game/training/rest), weekly + monthly objectives sections below grid. Learner gave multi-part verbal brief, expected immediate build with no clarifying questions.
+

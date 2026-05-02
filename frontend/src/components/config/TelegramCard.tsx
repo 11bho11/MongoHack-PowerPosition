@@ -15,91 +15,142 @@ export default function TelegramCard() {
 
   return (
     <div style={{
-      background: '#0f0f2a',
-      border: '1px solid #1a1a3e',
-      borderRadius: '10px',
-      padding: '24px',
-      marginBottom: '16px',
+      background: '#080f20',
+      border: '1px solid #162a4e',
+      borderRadius: '6px',
+      overflow: 'hidden',
+      marginBottom: '10px',
     }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: '16px',
-      }}>
-        <div>
-          <div style={{
-            fontSize: '15px',
-            fontWeight: 600,
-            color: '#e2e8f0',
-            marginBottom: '4px',
-          }}>
-            Telegram
+      {/* Top accent line */}
+      {connected && (
+        <div style={{
+          height: '2px',
+          background: 'linear-gradient(90deg, #10b981, transparent)',
+        }} />
+      )}
+
+      <div style={{ padding: '20px 22px' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: connected ? '0' : '16px',
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+              <span style={{
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '16px',
+                color: '#3b82f6',
+              }}>⊕</span>
+              <div style={{
+                fontFamily: 'Orbitron, sans-serif',
+                fontSize: '12px',
+                fontWeight: 700,
+                color: '#e2e8f0',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+              }}>
+                Telegram
+              </div>
+            </div>
+            <div style={{
+              fontFamily: 'Space Grotesk, sans-serif',
+              fontSize: '12px',
+              color: '#475569',
+              fontWeight: 300,
+              marginLeft: '26px',
+            }}>
+              Bot interface for coaching conversations
+            </div>
           </div>
-          <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-            Connect your Telegram bot to enable coaching conversations
-          </div>
+
+          {connected && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '7px',
+              padding: '5px 12px',
+              background: 'rgba(16,185,129,0.1)',
+              border: '1px solid rgba(16,185,129,0.25)',
+              borderRadius: '4px',
+            }}>
+              <div style={{
+                width: '5px', height: '5px',
+                borderRadius: '50%',
+                background: '#10b981',
+                boxShadow: '0 0 6px #10b981',
+                animation: 'pulse-dot 2.5s ease infinite',
+              }} />
+              <span style={{
+                fontFamily: 'Orbitron, sans-serif',
+                fontSize: '8px',
+                fontWeight: 700,
+                color: '#10b981',
+                letterSpacing: '0.2em',
+              }}>ONLINE</span>
+            </div>
+          )}
         </div>
-        {connected && (
+
+        {!connected ? (
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              type="text"
+              value={token}
+              onChange={e => setToken(e.target.value)}
+              placeholder="// Paste bot token from @BotFather"
+              style={{
+                flex: 1,
+                background: '#050c1a',
+                border: '1px solid #162a4e',
+                borderRadius: '4px',
+                padding: '9px 12px',
+                color: '#94a3b8',
+                fontSize: '12px',
+                outline: 'none',
+                fontFamily: 'JetBrains Mono, monospace',
+                transition: 'border-color 0.15s ease',
+              }}
+              onFocus={e => { e.target.style.borderColor = '#2a5090' }}
+              onBlur={e => { e.target.style.borderColor = '#162a4e' }}
+              onKeyDown={e => { if (e.key === 'Enter') handleConnect() }}
+            />
+            <button
+              onClick={handleConnect}
+              disabled={!token.trim() || connectTelegram.isPending}
+              style={{
+                padding: '9px 20px',
+                background: token.trim() ? 'rgba(59,130,246,0.12)' : 'transparent',
+                border: `1px solid ${token.trim() ? '#2a5090' : '#162a4e'}`,
+                borderRadius: '4px',
+                color: token.trim() ? '#60a5fa' : '#3d5070',
+                fontFamily: 'Orbitron, sans-serif',
+                fontSize: '9px',
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                cursor: token.trim() ? 'pointer' : 'not-allowed',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease',
+                boxShadow: token.trim() ? '0 0 14px rgba(59,130,246,0.15)' : 'none',
+              }}
+            >
+              {connectTelegram.isPending ? 'Linking...' : 'Connect'}
+            </button>
+          </div>
+        ) : (
           <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '4px 12px',
-            background: 'rgba(16,185,129,0.12)',
-            border: '1px solid rgba(16,185,129,0.3)',
-            borderRadius: '999px',
+            marginTop: '10px',
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: '10px',
+            color: '#3d5070',
+            letterSpacing: '0.08em',
           }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
-            <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 600 }}>Connected</span>
+            // Bot is active and polling for incoming messages.
           </div>
         )}
       </div>
-
-      {!connected ? (
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input
-            type="text"
-            value={token}
-            onChange={e => setToken(e.target.value)}
-            placeholder="Paste your bot token from @BotFather"
-            style={{
-              flex: 1,
-              background: '#0a0a1a',
-              border: '1px solid #1a1a3e',
-              borderRadius: '6px',
-              padding: '10px 14px',
-              color: '#e2e8f0',
-              fontSize: '13px',
-              outline: 'none',
-              fontFamily: 'monospace',
-            }}
-            onFocus={e => { e.target.style.borderColor = '#6366f1' }}
-            onBlur={e => { e.target.style.borderColor = '#1a1a3e' }}
-          />
-          <button
-            onClick={handleConnect}
-            disabled={!token.trim() || connectTelegram.isPending}
-            style={{
-              padding: '10px 20px',
-              background: token.trim() ? 'linear-gradient(135deg, #4f46e5, #7c3aed)' : '#1a1a3e',
-              border: 'none',
-              borderRadius: '6px',
-              color: token.trim() ? '#fff' : '#475569',
-              fontSize: '13px',
-              fontWeight: 600,
-              cursor: token.trim() ? 'pointer' : 'not-allowed',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {connectTelegram.isPending ? 'Connecting...' : 'Connect'}
-          </button>
-        </div>
-      ) : (
-        <div style={{ fontSize: '13px', color: '#64748b' }}>
-          Bot is active and polling for messages.
-        </div>
-      )}
     </div>
   )
 }

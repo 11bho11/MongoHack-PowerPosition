@@ -12,8 +12,8 @@ export function useCalendar() {
 export function useSaveCalendarEntry() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ date, content }: { date: string; content: string }) =>
-      api.saveCalendarEntry(date, content),
+    mutationFn: ({ date, content, event_type }: { date: string; content: string; event_type?: string | null }) =>
+      api.saveCalendarEntry(date, content, event_type),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar'] })
     },
@@ -58,5 +58,11 @@ export function useConnectTelegram() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['config'] })
     },
+  })
+}
+
+export function useUploadDocument() {
+  return useMutation({
+    mutationFn: (file: File) => api.uploadDocument(file),
   })
 }

@@ -4,10 +4,12 @@ load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 from contextlib import asynccontextmanager
 import asyncio
+import os
+from datetime import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from db.client import create_indexes, create_vector_search_index
+from db.client import create_indexes, create_vector_search_index, config as config_col
 from agent.graph import init_graph
 from scheduler import start_scheduler
 from bot.runner import run_bot
@@ -24,6 +26,14 @@ async def lifespan(app: FastAPI):
     # DB setup
     create_indexes()
     create_vector_search_index()
+    # Auto-connect Telegram if token is already in .env
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    if token:
+        config_col.update_one(
+            {},
+            {"$set": {"telegram_connected": True, "updated_at": datetime.utcnow()}},
+            upsert=True,
+        )
     # Init agent graph
     init_graph()
     # Start scheduler
