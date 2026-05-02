@@ -16,7 +16,7 @@
   Acceptance: `cd backend && uvicorn main:app --reload --port 8000` starts without import errors. `cd frontend && npm run dev` serves a page at localhost:5173.
   Verify: Both startup commands run cleanly with no errors in either terminal.
 
-- [ ] **2. MongoDB data layer**
+- [x] **2. MongoDB data layer**
   Spec ref: `spec.md > Data Model`, `spec.md > Backend > FastAPI Application`
   What to build: Create `backend/db/client.py` — MongoDB client using MONGODB_URI from env, expose named collection references for all 7 collections (calendar_entries, sessions, coaching_plans, agent_logs, workflow_state, training_docs, config). Add unique index on `calendar_entries.date`. Programmatically attempt to create Atlas Vector Search index `training_docs_vector_index` on startup (1536 dims, cosine similarity, path: "embedding") — include a note that index creation can take 1-2 minutes. Create `backend/db/models.py` — Pydantic models for all 7 collections matching the exact schemas in spec.md > Data Model.
   Acceptance: Backend starts with MongoDB connected. All 7 collection references are accessible. Vector Search index creation is attempted without errors (even if not yet ready).
