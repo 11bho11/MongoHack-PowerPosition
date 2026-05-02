@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+langgraph
+langgraph-checkpoint-mongodb==0.3.1
+langgraph-store-mongodb==0.2.0
+pymongo
+python-telegram-bot==22.7
+apscheduler
+openai
+langchain-community
+langchain-openai
+playwright
+python-dotenv
+pydantic
+tavily-python
+langchain
