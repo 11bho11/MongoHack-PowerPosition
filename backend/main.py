@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db.client import create_indexes, create_vector_search_index
 from api.documents import router as documents_router
+from agent.graph import init_graph
 
 
 @asynccontextmanager
@@ -12,6 +13,8 @@ async def lifespan(app: FastAPI):
     # Startup: ensure DB indexes are in place
     create_vector_search_index()
     create_indexes()
+    # Initialize LangGraph agent (binds tools, compiles graph)
+    init_graph()
     # On startup with real .env values, call embed_and_store here with a seed URL
     yield
     # Shutdown: nothing to clean up
