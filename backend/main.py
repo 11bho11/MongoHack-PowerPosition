@@ -1,7 +1,21 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="PowerPosition")
+from db.client import create_indexes, create_vector_search_index
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: ensure DB indexes are in place
+    create_vector_search_index()
+    create_indexes()
+    yield
+    # Shutdown: nothing to clean up
+
+
+app = FastAPI(title="PowerPosition", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -10,6 +24,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/")
 async def root():

@@ -10,7 +10,7 @@
 
 ## Checklist
 
-- [ ] **1. Project scaffold + environment setup**
+- [x] **1. Project scaffold + environment setup**
   Spec ref: `spec.md > Stack`, `spec.md > Runtime & Deployment`, `spec.md > File Structure`
   What to build: Create the full folder structure from spec.md > File Structure. Initialize Python backend with `requirements.txt` covering fastapi, uvicorn, langgraph, langgraph-checkpoint-mongodb==0.3.1, langgraph-store-mongodb==0.2.0, pymongo, python-telegram-bot==22.7, apscheduler, openai, langchain-community, playwright, python-dotenv, pydantic. Create `backend/.env` with all required variables: MONGODB_URI, OPENAI_API_KEY, TELEGRAM_BOT_TOKEN, MONGO_DB_NAME=powerposition, INACTIVITY_THRESHOLD_HOURS=48, SESSIONS_BEFORE_PLAN_UPDATE=3. Initialize frontend with `npm create vite@latest frontend -- --template react-ts`. Install frontend deps: tailwindcss v4, shadcn/ui, react-router-dom@7, @tanstack/react-query@5. Create `frontend/tailwind.config.ts` with dark mode enabled and sci-fi color tokens (base: #0a0a1a, indigo/purple atmospheric palette). Create minimal `backend/main.py` (empty FastAPI app) so the server can start. Install Playwright Chromium: `playwright install chromium`.
   Acceptance: `cd backend && uvicorn main:app --reload --port 8000` starts without import errors. `cd frontend && npm run dev` serves a page at localhost:5173.
